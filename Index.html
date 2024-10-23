@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhận diện bình luận tiêu cực</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background-color: #f4f4f4; /* Màu nền nhẹ nhàng */
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px; /* Thêm khoảng cách bên trong */
+            border: 1px solid #ccc; /* Đường viền */
+            border-radius: 5px; /* Bo góc */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #28a745; /* Màu xanh lá */
+            color: white; /* Màu chữ trắng */
+            border: none; /* Không có đường viền */
+            border-radius: 5px; /* Bo góc */
+            transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+        }
+        button:hover {
+            background-color: #218838; /* Màu tối hơn khi di chuột qua */
+        }
+        h2 {
+            margin-top: 20px;
+            color: #333; /* Màu chữ tối */
+        }
+    </style>
+</head>
+<body>
+    <h1>Nhận diện bình luận tiêu cực</h1>
+    <textarea id="comment" placeholder="Nhập bình luận của bạn..."></textarea>
+    <br>
+    <button onclick="getPrediction()">Dự đoán</button>
+
+    <h2>Kết quả: <span id="result"></span></h2>
+
+    <script>
+        function getPrediction() {
+            const comment = document.getElementById('comment').value;
+
+            // Kiểm tra xem bình luận có được nhập hay không
+            if (!comment.trim()) {
+                alert('Vui lòng nhập một bình luận!');
+                return;
+            }
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ comment: comment }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Mạng có vấn đề!'); // Xử lý lỗi mạng
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('result').innerText = data.prediction;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+            });
+        }
+    </script>
+</body>
+</html>
